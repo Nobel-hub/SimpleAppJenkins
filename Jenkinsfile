@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "simple-app:latest"
+        CONTAINER_NAME = "simple-app-container"
+    }
+
     stages {
         stage("Clone Repository") {
             steps {
@@ -11,7 +16,18 @@ pipeline {
         stage("Build Docker Image") {
             steps {
                 script {
-                    dockerImage = docker.build("simple-app:latest")
+                    dockerImage = docker.build(IMAGE_NAME)
+                }
+            }
+        }
+
+        stage("Stop Existing Container") {
+            steps {
+                script {
+                    sh """
+                    docker stop $CONTAINER_NAME || true
+                    docker rm $CONTAINER_NAME || true
+                    """
                 }
             }
         }
@@ -19,7 +35,7 @@ pipeline {
         stage("Run Container") {
             steps {
                 script {
-                    dockerImage.run("-d -p 8080:8080")
+                    dockerImage.run("-d -p 9090:8080 --name $CONTAINER_NAME")
                 }
             }
         }
