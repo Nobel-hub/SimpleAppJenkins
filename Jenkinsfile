@@ -2,22 +2,35 @@ pipeline {
     agent any
 
     stages {
-        stage ("Clone Repository") {
+        stage("Clone Repository") {
             steps {
-                git 'https://github.com/Nobel-hub/SimpleAppJenkins.git'
+                git branch: 'main', url: 'https://github.com/Nobel-hub/SimpleAppJenkins.git'
             }
         }
 
         stage("Build Docker Image") {
             steps {
-                sh 'docker build -t simple-application .'
+                script {
+                    dockerImage = docker.build("simple-app:latest")
+                }
             }
         }
 
-        stage ("Run Container") {
+        stage("Run Container") {
             steps {
-                sh 'docker run -d -p 8081:80 simple-application'
+                script {
+                    dockerImage.run("-d -p 8080:8080")
+                }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline executed successfully!"
+        }
+        failure {
+            echo "Pipeline failed! Check the logs for details."
         }
     }
 }
