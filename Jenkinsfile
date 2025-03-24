@@ -35,7 +35,9 @@ pipeline {
         stage("Run Container") {
             steps {
                 script {
-                    dockerImage.run("-d -p 9090:8080 --name $CONTAINER_NAME")
+                    sh """
+                    docker run -d -p 9090:8080 --name $CONTAINER_NAME $IMAGE_NAME
+                    """
                 }
             }
         }
