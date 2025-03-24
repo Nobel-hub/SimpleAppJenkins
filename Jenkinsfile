@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    docker run -d -p 9090:8080 --name $CONTAINER_NAME $IMAGE_NAME
+                    docker run -d -p 9090:80 --name $CONTAINER_NAME $IMAGE_NAME
                     """
                 }
             }
